@@ -399,6 +399,10 @@ class Boss:
         self.cursor_blinking = True
         self.shutting_down = False
         self.misc_config_errors: list[str] = []
+        self.is_minimized = False
+        talk_fd = getattr(single_instance, 'socket', None)
+        talk_fd = -1 if talk_fd is None else talk_fd.fileno()
+        listen_fd = -1
         # we dont allow reloading the config file to change
         # allow_remote_control
         self.allow_remote_control = opts.allow_remote_control
@@ -432,18 +436,23 @@ class Boss:
         token = os.environ.pop('XDG_ACTIVATION_TOKEN', '')
         with Window.set_ignore_focus_changes_for_new_windows():
             for startup_session in si:
-                # The window state from the CLI options will override and apply to every single OS window in startup session
-                wstate = self.args.start_as if self.args.start_as and self.args.start_as != 'normal' else None
-                wid = self.add_os_window(startup_session, window_state=wstate, os_window_id=os_window_id)
+                wid = self.add_os_window(startup_session, os_window_id=os_window_id)
                 if startup_session.focus_os_window:
                     focused_os_window = wid
                 os_window_id = None
+                if self.args.start_as != 'normal':
+                    if self.args.start_as == 'fullscreen':
+                        self.toggle_fullscreen()
+                    else:
+                        change_os_window_state(self.args.start_as)
+                        if self.args.start_as == 'minimized':
+                            self.is_minimized = True
             if focused_os_window > 0:
                 focus_os_window(focused_os_window, True, token)
             elif token and is_wayland() and wid:
                 focus_os_window(wid, True, token)
-        for w in self.all_windows:
-            w.ignore_focus_changes = False
+            for w in self.all_windows:
+                w.ignore_focus_changes = False
 
     def add_os_window(
         self,
@@ -1306,6 +1315,15 @@ class Boss:
             if tm:
                 os_window_id = tm.os_window_id
         toggle_fullscreen(os_window_id)
+
+    @ac('win', 'Toggle the minimized status of the active OS Window')
+    def toggle_minimized(self, os_window_id: int=0) -> None:
+        if self.is_minimized:
+            focus_os_window(os_window_id, True)
+            self.is_minimized = False
+        else:
+            change_os_window_state('minimized')
+            self.is_minimized = True
 
     @ac('win', 'Toggle the maximized status of the active OS Window')
     def toggle_maximized(self, os_window_id: int = 0) -> None:
