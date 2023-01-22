@@ -14,7 +14,7 @@ class ResizeOSWindow(RemoteCommand):
     match/str: Which window to resize
     self/bool: Boolean indicating whether to close the window the command is run in
     incremental/bool: Boolean indicating whether to adjust the size incrementally
-    action/choices.resize.toggle-fullscreen.toggle-maximized: One of :code:`resize, toggle-fullscreen` or :code:`toggle-maximized`
+    action/choices.resize.toggle-fullscreen.toggle-maximized: One of :code:`resize, toggle-fullscreen, toggle-minimized`, or :code:`toggle-maximized`
     unit/choices.cells.pixels: One of :code:`cells` or :code:`pixels`
     width/int: Integer indicating desired window width
     height/int: Integer indicating desired window height
@@ -29,7 +29,7 @@ class ResizeOSWindow(RemoteCommand):
     options_spec = MATCH_WINDOW_OPTION + '''\n
 --action
 default=resize
-choices=resize,toggle-fullscreen,toggle-maximized
+choices=resize,toggle-fullscreen,toggle-maximized,toggle-minimized
 The action to perform.
 
 
@@ -88,6 +88,8 @@ using this option means that you will not be notified of failures.
                     )
                 elif ac == 'toggle-fullscreen':
                     boss.toggle_fullscreen(os_window_id)
+                elif ac == 'toggle-minimized':
+                    boss.toggle_minimized(os_window_id)
                 elif ac == 'toggle-maximized':
                     boss.toggle_maximized(os_window_id)
         return None
