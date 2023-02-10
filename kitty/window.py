@@ -149,6 +149,7 @@ class CwdRequest:
         window = self.window
         if not window:
             return ''
+        '''
         reported_cwd = path_from_osc7_url(window.screen.last_reported_cwd) if window.screen.last_reported_cwd else ''
         if reported_cwd and (self.request_type is not CwdRequestType.root or window.root_in_foreground_processes):
             ssh_kitten_cmdline = window.ssh_kitten_cmdline()
@@ -166,6 +167,7 @@ class CwdRequest:
                 return ''
             if not window.child_is_remote and (self.request_type is CwdRequestType.last_reported or window.at_prompt):
                 return reported_cwd
+        '''
         return window.get_cwd_of_child(oldest=self.request_type is CwdRequestType.oldest) or ''
 
 
