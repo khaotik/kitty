@@ -68,6 +68,8 @@ from .fast_data_types import (
     GLFW_RELEASE,
     IMPERATIVE_CLOSE_REQUESTED,
     NO_CLOSE_REQUESTED,
+    WINDOW_NORMAL,
+    WINDOW_MINIMIZED,
     ChildMonitor,
     Color,
     EllipticCurveKey,
@@ -77,6 +79,7 @@ from .fast_data_types import (
     apply_options_update,
     background_opacity_of,
     change_background_opacity,
+    change_os_window_state,
     cocoa_hide_app,
     cocoa_hide_other_apps,
     cocoa_minimize_os_window,
@@ -111,6 +114,7 @@ from .fast_data_types import (
     set_os_window_title,
     thread_write,
     toggle_fullscreen,
+    #  toggle_minimized,
     toggle_maximized,
     toggle_secure_input,
     wrapped_kitten_names,
@@ -1076,7 +1080,7 @@ class Boss:
             focus_os_window(os_window_id, True)
             self.is_minimized = False
         else:
-            change_os_window_state('minimized')
+            change_os_window_state(WINDOW_MINIMIZED)
             self.is_minimized = True
 
     @ac('win', 'Toggle the maximized status of the active OS Window')
