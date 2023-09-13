@@ -1067,6 +1067,19 @@ toggle_maximized_for_os_window(OSWindow *w) {
     }
     return maximized;
 }
+static bool
+toggle_minimized_for_os_window(OSWindow *w) {
+    bool minimized = false;
+    if (w && w->handle) {
+        if (glfwGetWindowAttrib(w->handle, GLFW_ICONIFIED)) {
+            glfwRestoreWindow(w->handle);
+        } else {
+            glfwIconifyWindow(w->handle);
+            minimized = true;
+        }
+    }
+    return minimized;
+}
 
 static void
 change_state_for_os_window(OSWindow *w, int state) {
@@ -2022,6 +2035,16 @@ toggle_maximized(PyObject UNUSED *self, PyObject *args) {
 }
 
 static PyObject*
+toggle_minimized(PyObject UNUSED *self, PyObject *args) {
+    id_type os_window_id = 0;
+    if (!PyArg_ParseTuple(args, "|K", &os_window_id)) return NULL;
+    OSWindow *w = os_window_id ? os_window_for_id(os_window_id) : current_os_window();
+    if (!w) Py_RETURN_NONE;
+    if (toggle_minimized_for_os_window(w)) { Py_RETURN_TRUE; }
+    Py_RETURN_FALSE;
+}
+
+static PyObject*
 cocoa_minimize_os_window(PyObject UNUSED *self, PyObject *args) {
     id_type os_window_id = 0;
     if (!PyArg_ParseTuple(args, "|K", &os_window_id)) return NULL;
@@ -2621,6 +2644,7 @@ static PyMethodDef module_methods[] = {
     METHODB(ring_bell, METH_VARARGS),
     METHODB(toggle_fullscreen, METH_VARARGS),
     METHODB(toggle_maximized, METH_VARARGS),
+    METHODB(toggle_minimized, METH_VARARGS),
     METHODB(change_os_window_state, METH_VARARGS),
     METHODB(glfw_window_hint, METH_VARARGS),
     METHODB(x11_display, METH_NOARGS),
