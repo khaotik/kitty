@@ -70,6 +70,7 @@ from .fast_data_types import (
     NO_CLOSE_REQUESTED,
     WINDOW_NORMAL,
     WINDOW_MINIMIZED,
+    WINDOW_MAXIMIZED,
     ChildMonitor,
     Color,
     EllipticCurveKey,
@@ -114,7 +115,7 @@ from .fast_data_types import (
     set_os_window_title,
     thread_write,
     toggle_fullscreen,
-    #  toggle_minimized,
+    toggle_minimized,
     toggle_maximized,
     toggle_secure_input,
     wrapped_kitten_names,
@@ -1076,12 +1077,7 @@ class Boss:
 
     @ac('win', 'Toggle the minimized status of the active OS Window')
     def toggle_minimized(self, os_window_id: int=0) -> None:
-        if self.is_minimized:
-            focus_os_window(os_window_id, True)
-            self.is_minimized = False
-        else:
-            change_os_window_state(WINDOW_MINIMIZED)
-            self.is_minimized = True
+        toggle_minimized(os_window_id)
 
     @ac('win', 'Toggle the maximized status of the active OS Window')
     def toggle_maximized(self, os_window_id: int = 0) -> None:
