@@ -448,6 +448,8 @@ class Boss:
                 if self.args.start_as != 'normal':
                     if self.args.start_as == 'fullscreen':
                         self.toggle_fullscreen()
+                    elif self.args.start_as == 'maximized':
+                        change_os_window_state(WINDOW_MAXIMIZED)
                     else:
                         change_os_window_state(self.args.start_as)
                         if self.args.start_as == 'minimized':
@@ -1323,8 +1325,8 @@ class Boss:
 
     @ac('win', 'Toggle the minimized status of the active OS Window')
     def toggle_minimized(self, os_window_id: int=0) -> None:
-        toggle_minimized(os_window_id)
-        focus_os_window(os_window_id, True)
+        if not toggle_minimized(os_window_id):
+            focus_os_window(os_window_id, True)
 
     @ac('win', 'Toggle the maximized status of the active OS Window')
     def toggle_maximized(self, os_window_id: int = 0) -> None:
