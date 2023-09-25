@@ -2348,15 +2348,13 @@ int _glfwPlatformWindowBell(_GLFWwindow* window)
 
 void _glfwPlatformFocusWindow(_GLFWwindow* window)
 {
-    if (_glfw.x11.NET_ACTIVE_WINDOW)
+    if (_glfw.x11.NET_ACTIVE_WINDOW) {
         sendEventToWM(window, _glfw.x11.NET_ACTIVE_WINDOW, 1, 0, 0, 0, 0);
-    else if (_glfwPlatformWindowVisible(window))
-    {
+    } else if (_glfwPlatformWindowVisible(window)) {
         XRaiseWindow(_glfw.x11.display, window->x11.handle);
         XSetInputFocus(_glfw.x11.display, window->x11.handle,
                        RevertToParent, CurrentTime);
     }
-
     XFlush(_glfw.x11.display);
 }
 
