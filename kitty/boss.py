@@ -405,8 +405,6 @@ class Boss:
         self.shutting_down = False
         self.misc_config_errors: list[str] = []
         self.is_minimized = False
-        talk_fd = getattr(single_instance, 'socket', None)
-        talk_fd = -1 if talk_fd is None else talk_fd.fileno()
         listen_fd = -1
         # we dont allow reloading the config file to change
         # allow_remote_control
@@ -1326,7 +1324,7 @@ class Boss:
     @ac('win', 'Toggle the minimized status of the active OS Window')
     def toggle_minimized(self, os_window_id: int=0) -> None:
         if not toggle_minimized(os_window_id):
-            focus_os_window(os_window_id, True)
+            focus_os_window(os_window_id, True, 'STUPID workaround to force window focus')
 
     @ac('win', 'Toggle the maximized status of the active OS Window')
     def toggle_maximized(self, os_window_id: int = 0) -> None:
