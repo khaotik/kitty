@@ -1323,8 +1323,7 @@ class Boss:
 
     @ac('win', 'Toggle the minimized status of the active OS Window')
     def toggle_minimized(self, os_window_id: int=0) -> None:
-        if not toggle_minimized(os_window_id):
-            focus_os_window(os_window_id, True, 'STUPID workaround to force window focus')
+        toggle_minimized(os_window_id)
 
     @ac('win', 'Toggle the maximized status of the active OS Window')
     def toggle_maximized(self, os_window_id: int = 0) -> None:

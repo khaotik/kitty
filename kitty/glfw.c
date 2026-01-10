@@ -327,7 +327,6 @@ window_close_callback(GLFWwindow* window) {
 static void
 window_occlusion_callback(GLFWwindow *window, bool occluded) {
     if (!set_callback_window(window)) return;
-    debug("OSWindow %llu occlusion state changed, occluded: %d\n", global_state.callback_os_window->id, occluded);
     if (!occluded) global_state.check_for_active_animated_images = true;
     request_tick_callback();
     global_state.callback_os_window = NULL;
@@ -606,7 +605,6 @@ static void
 window_focus_callback(GLFWwindow *w, int focused) {
     if (!set_callback_window(w)) return;
 #define osw global_state.callback_os_window
-    debug_input("\x1b[35mon_focus_change\x1b[m: window id: 0x%llu focused: %d\n", osw->id, focused);
     bool focus_changed = osw->is_focused != focused;
     osw->is_focused = focused ? true : false;
     monotonic_t now = monotonic();
@@ -1069,16 +1067,15 @@ toggle_maximized_for_os_window(OSWindow *w) {
 }
 static bool
 toggle_minimized_for_os_window(OSWindow *w) {
-    bool minimized = false;
-    if (w && w->handle) {
-        if (glfwGetWindowAttrib(w->handle, GLFW_ICONIFIED)) {
-            glfwRestoreWindow(w->handle);
-        } else {
-            glfwIconifyWindow(w->handle);
-            minimized = true;
-        }
+    bool is_visible = glfwGetWindowAttrib(w->handle, GLFW_VISIBLE);
+    if (is_visible) {
+        glfwHideWindow(w->handle);
+    } else {
+        set_os_window_visibility(w, !is_visible, false);
+        glfwMaximizeWindow(w->handle);
+        glfwFocusWindow(w->handle);
     }
-    return minimized;
+    return !is_visible;
 }
 
 static void
